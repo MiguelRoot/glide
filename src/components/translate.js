@@ -1,4 +1,5 @@
 import mutator from '../mutator/index'
+import { isNumber } from '../utils/unit'
 
 export default function (Glide, Components, Events) {
   const Translate = {
@@ -35,9 +36,15 @@ export default function (Glide, Components, Events) {
 
     if (Glide.settings.loop && Components.Run.isOffset('<')) {
       Components.Transition.after(() => {
-        Events.emit('translate.jump')
+        Events.emit('translate.jump', {
+          value: width * Glide.index
+        })
 
         Translate.set(width * Glide.index)
+      })
+
+      Events.emit('translate.set', {
+        value: -(width * (length - Glide.index))
       })
 
       return Translate.set(-(width * (length - Glide.index)))
@@ -45,13 +52,23 @@ export default function (Glide, Components, Events) {
 
     if (Glide.settings.loop && Components.Run.isOffset('>')) {
       Components.Transition.after(() => {
-        Events.emit('translate.jump')
+        Events.emit('translate.jump', {
+          value: width * Glide.index
+        })
 
         Translate.set(width * Glide.index)
       })
 
+      Events.emit('translate.set', {
+        value: width * (length + Glide.index)
+      })
+
       return Translate.set(width * (length + Glide.index))
     }
+
+    Events.emit('translate.set', {
+      value: context.movement
+    })
 
     return Translate.set(context.movement)
   })
